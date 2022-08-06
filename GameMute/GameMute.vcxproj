@@ -131,11 +131,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GameMute.cpp" />
-    <ClCompile Include="VolumeController.cpp" />
+    <ClCompile Include="game_mute.cpp" />
+    <ClCompile Include="systray.cpp" />
+    <ClCompile Include="volume_controller.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VolumeController.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="systray.h" />
+    <ClInclude Include="volume_controller.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GameMute.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

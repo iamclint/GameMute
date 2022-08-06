@@ -8,14 +8,14 @@
 #include <audiopolicy.h>
 #include <mmdeviceapi.h>
 #include <unordered_map>
-class VolumeController
+class volume_controller
 {
 public:
 	std::vector<std::wstring> process_names;
 public:
-	VolumeController();
-	~VolumeController();
-	VolumeController(std::vector<std::wstring>& proc_names, int update_interval=500);
+	volume_controller();
+	~volume_controller();
+	volume_controller(std::vector<std::wstring>& proc_names, int update_interval=500);
 
 private:
 	bool is_running;

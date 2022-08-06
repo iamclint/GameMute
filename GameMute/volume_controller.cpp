@@ -1,29 +1,30 @@
-#include "VolumeController.h"
+#include "volume_controller.h"
+#include "systray.h"
 #include <iostream>
 #define SAFE_RELEASE(punk)  \
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }
 
-void VolumeController::remove_extension(std::wstring& data)
+void volume_controller::remove_extension(std::wstring& data)
 {
     auto pos = data.find_last_of('.');
     if (pos != std::wstring::npos)
         data.erase(pos);
 }
-void VolumeController::remove_path(std::wstring& data)
+void volume_controller::remove_path(std::wstring& data)
 {
     auto pos = data.find_last_of('\\');
     if (pos != std::wstring::npos)
         data.erase(0, pos + 1);
 }
-void VolumeController::string_to_lower(std::wstring& data)
+void volume_controller::string_to_lower(std::wstring& data)
 {
     std::transform(data.begin(), data.end(), data.begin(),
         [](unsigned char c) { return std::tolower(c); });
 
 }
 
-void VolumeController::fix_name(std::wstring& data)
+void volume_controller::fix_name(std::wstring& data)
 {
     remove_path(data);
     remove_extension(data);
@@ -31,7 +32,7 @@ void VolumeController::fix_name(std::wstring& data)
     
 }
 
-std::wstring VolumeController::get_process_name(DWORD pid)
+std::wstring volume_controller::get_process_name(DWORD pid)
 {
     TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
@@ -45,7 +46,7 @@ std::wstring VolumeController::get_process_name(DWORD pid)
 		
 }
 
-std::unordered_map<std::wstring, ISimpleAudioVolume*> VolumeController::EnumSessions(IAudioSessionManager2* pSessionManager)
+std::unordered_map<std::wstring, ISimpleAudioVolume*> volume_controller::EnumSessions(IAudioSessionManager2* pSessionManager)
 {
 
     if (!pSessionManager)
@@ -102,7 +103,7 @@ done:
 
 }
 
-HRESULT VolumeController::CreateSessionManager(IAudioSessionManager2** ppSessionManager)
+HRESULT volume_controller::CreateSessionManager(IAudioSessionManager2** ppSessionManager)
 {
 
     HRESULT hr = S_OK;
@@ -142,7 +143,7 @@ done:
 
     return hr;
 }
-void VolumeController::update()
+void volume_controller::update()
 {
     static HWND previous_foreground_window = GetForegroundWindow();
 	HWND foreground_window = GetForegroundWindow();
@@ -157,6 +158,7 @@ void VolumeController::update()
         std::wcout << "Activated proc_name: " << proc_name << " Previous proc_name: " << previous_proc_name << std::endl;
         if (std::find(process_names.begin(), process_names.end(), proc_name) != process_names.end()) //Process has gained focus
 		{
+			
             CreateSessionManager(&manager);
             std::unordered_map<std::wstring, ISimpleAudioVolume*> sessions = EnumSessions(manager);
 			if (sessions.find(proc_name) != sessions.end())
@@ -165,6 +167,7 @@ void VolumeController::update()
                 volume->SetMute(false, 0);
                 std::wcout << "UnMuted: " << proc_name << std::endl;
 			}
+            SAFE_RELEASE(manager);
 		}
 		
         if (std::find(process_names.begin(), process_names.end(), previous_proc_name) != process_names.end()) //Process has lost focus
@@ -175,14 +178,16 @@ void VolumeController::update()
             {
                 ISimpleAudioVolume* volume = sessions[previous_proc_name];
                 volume->SetMute(true, 0);
-				std::wcout << "Muted: " << previous_proc_name << std::endl;
+                systray::balloon_msg(proc_name, L"Muted");
+                std::wcout << "Muted: " << previous_proc_name << std::endl;
             }
+            SAFE_RELEASE(manager);
         }
     }
 	
     previous_foreground_window = foreground_window;
 }
-void VolumeController::run()
+void volume_controller::run()
 {
     is_running = true;
     update_thread = std::thread([this]()
@@ -212,14 +217,14 @@ void VolumeController::run()
         });
     bind_thread.detach();
 }
-VolumeController::VolumeController() : process_names{}, update_thread{}, update_time{500}
+volume_controller::volume_controller() : process_names{}, update_thread{}, update_time{500}
 {
     run();
 }
-VolumeController::VolumeController(std::vector<std::wstring>& proc_names, int update_interval) : process_names{ proc_names }, update_thread{}, update_time{ update_interval } {
+volume_controller::volume_controller(std::vector<std::wstring>& proc_names, int update_interval) : process_names{ proc_names }, update_thread{}, update_time{ update_interval } {
     run();
 }
-VolumeController::~VolumeController()
+volume_controller::~volume_controller()
 {
     is_running = false;
 }
