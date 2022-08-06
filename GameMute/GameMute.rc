@@ -1,7 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-
+MAINICON ICON "gm.ico"
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -58,6 +58,16 @@ BEGIN
         MENUITEM "&Exit",                       ID_EXIT
     END
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "gm.ico"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

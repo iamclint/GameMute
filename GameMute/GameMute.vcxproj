@@ -143,6 +143,9 @@
   <ItemGroup>
     <ResourceCompile Include="GameMute.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="gm.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
