@@ -178,7 +178,6 @@ void volume_controller::update()
             {
                 ISimpleAudioVolume* volume = sessions[previous_proc_name];
                 volume->SetMute(true, 0);
-                systray::balloon_msg(proc_name, L"Muted");
                 std::wcout << "Muted: " << previous_proc_name << std::endl;
             }
             SAFE_RELEASE(manager);
