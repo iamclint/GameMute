@@ -7,6 +7,7 @@ example game_list.txt
 <pre>
 valorant-win64-shipping
 iw3mp
+tslgame
 </pre>
 
 These are simply process names in lower case, one per line
